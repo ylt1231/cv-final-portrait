@@ -71,14 +71,12 @@ def get_feature(model, style_path, content_path):
     style = image.pre_process_img(style_path)
     content = image.pre_process_img(content_path)
     # creating new style matrix for color transfer
-    # style = np.squeeze(style, axis=0)
-    # content = np.squeeze(content, axis=0)
-    # print("Line 70: style's shape", style.shape)
-    # new_style = color_transfer.pixel_transformation('image_analogies', style, content)
-    # new_style = np.expand_dims(new_style, axis=0)
-    # print("Line 74: new_style's shape", new_style.shape)
-    # content = np.expand_dims(content, axis=0)
-    style_feature_outputs = model(style)
+    style = np.squeeze(style, axis=0)
+    content = np.squeeze(content, axis=0)
+    new_style = color_transfer.pixel_transformation('image_analogies', style, content)
+    new_style = np.expand_dims(new_style, axis=0)
+    content = np.expand_dims(content, axis=0)
+    style_feature_outputs = model(new_style)
     content_feature_outputs = model(content)
     style_feature_arr, content_feature_arr = [], []
 
@@ -132,7 +130,7 @@ def loss(model,loss_weights,init_image,content_features,style_features):
     content_layer_weight = 1.0
     for i in range(len(content_features)): 
         if i == 2 or i == 3:
-            style_layer_weight = 0.5
+            content_layer_weight = 0.5
         total_content_loss = total_content_loss + content_layer_weight * content_loss(content_features[i], gen_content_feature[i])
     
     total_style_loss *= style_weight
